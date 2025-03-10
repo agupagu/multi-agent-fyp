@@ -1,0 +1,282 @@
+import os
+import sys
+from langchain_openai import ChatOpenAI
+import importlib
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import asyncio
+
+import browser_use
+
+# Reload the module
+importlib.reload(browser_use)
+
+# Then re-import the classes after reload
+from browser_use import Agent, Browser, Controller, AgentHistoryList
+from browser_use.controller.service import Controller
+from langchain_anthropic import ChatAnthropic
+from browser_use.browser.browser import BrowserConfig
+from pydantic import BaseModel
+from typing import List, Optional
+import json, os
+from playwright.async_api import BrowserContext
+
+
+
+browser = Browser(
+config=BrowserConfig(
+	headless=False,
+	chrome_instance_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',  # Adjust this path for your OS
+	)
+)
+
+controller = Controller()
+
+class Quest(BaseModel):
+	name: str
+	url: str
+
+
+class Quests(BaseModel):
+	quests: List[Quest]
+
+class elment_on_page(BaseModel):
+	index: int
+	xpath: Optional[str] = None
+
+# @controller.action("Get XPath of element using index", param_model=elment_on_page)
+# async def get_xpath_of_element(params: elment_on_page, browser: BrowserContext):
+#     session = await browser.get_session()
+#     state = session.cached_state
+#     if params.index not in state.selector_map:
+#         return ActionResult(error="Element not found")
+
+#     element_node = state.selector_map[params.index]
+#     xpath = element_node.xpath
+#     if(xpath is None):
+#         return ActionResult(error="Element not found, try another index")
+#     return ActionResult(extracted_content="The xpath of the element is "+xpath, include_in_memory=True)
+
+
+@controller.action('Save quests to a file named quests.json', param_model=Quests)
+def save_quests(params: Quests):
+	file_path = 'quests.json'
+
+	# Load existing data if the file exists
+	if os.path.exists(file_path):
+		with open(file_path, 'r') as f:
+			quests = json.load(f)
+	else:
+		quests = []
+
+	# Append new quests
+	for quest in params.quests:
+		quests.append({"name": quest.name, "url": quest.url})
+
+	# Write the updated data to the JSON file
+	with open(file_path, 'w') as f:
+		json.dump(quests, f, indent=4)
+
+@controller.action('Read quests from quests.json file')
+def read_quests():
+	with open('quests.json', 'r') as f:
+		return f.read()
+	  
+
+# Video: https://preview.screen.studio/share/8Elaq9sm
+async def main():
+	  
+	# Persist the browser state across agents
+
+	async with await browser.new_context() as context:
+		model = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
+		openaimodel = ChatOpenAI(model='gpt-4o', temperature=0.3)
+	
+
+
+		# Initialize browser agent
+		LoginCheckerAgent = Agent(
+			task="""
+				Objective: Detect User Login Status
+				Detection Method:
+
+				Navigate to https://app.layer3.xyz/quests/bridge-usdc-to-flare
+				Wait for user to complete login process
+				Confirm login by verifying absence of "Log In" button on screen
+
+				Verification Criteria:
+
+				User interface changes to logged-in state
+				"Log In" button no longer visible
+
+				Confirmation Signal:
+
+				Visual absence of login button indicates successful authentication
+
+				Note: Rely on visual UI state change as login confirmation mechanism.
+			""",
+			llm=model,
+			browser_context=context,
+		)
+		# AlphaHunterAgent = Agent(
+		# 	task="""
+		# 			Objective: Systematically capture details of the top 3 Trending Quests on app.galxe.com
+
+		# 			Detailed Steps:
+		# 			1. Navigate to app.galxe.com
+		# 			2. Locate the "Trending Quests" section by scrolling down
+		# 			3. For the first quest:
+		# 			- Click into the quest details page
+		# 			- Extract and record:
+		# 				* Full quest name
+		# 				* Complete quest URL
+		# 			- Return to the main "Trending Quests" section
+		# 			4. Repeat steps for the next two quests, maintaining the same extraction process
+
+		# 			Data Collection Requirements:
+		# 			- Capture exactly 3 quests
+		# 			- Ensure unique quest details for each entry
+		# 			- Maintain chronological order from the "Trending Quests" section
+
+		# 			Output Format:
+		# 			Provide a structured list/dictionary with the following for each quest:
+		# 			{
+		# 				"quest_name": "[Name of Quest]",
+		# 				"quest_url": "[Complete URL]"
+		# 			}
+		# 	""",
+		# 	llm=openaimodel,
+		# 	controller=controller,
+		# 	browser_context=context,
+		# )
+
+		TaskCompletionAgent = Agent(
+			task="""
+			Objective: Complete Tasks in Quest Page with Validation
+			
+			Before starting the task, ensure to extract the description of the task.
+			
+			Pre-execution Validation:
+			1. For each onchain task:
+			- Verify exact network (e.g., "Ethereum", "Polygon", "Arbitrum")
+			- Confirm token name
+			- Validate token amount
+			- Check wallet balance before execution
+			
+			
+			Task Categories and Steps:
+			
+			1. Social Media Tasks:
+			- Verify authentic platform URL
+			- Complete specified interaction
+			- Wait for confirmation
+			- Verify task completion status
+			
+			2. Link Click Tasks:
+			- Validate URL destination
+			- Complete click action
+			- Verify tracking completion
+			
+			3. Question/Answer Tasks:
+			- Record exact question text
+			- Submit specified answer
+			- Verify response acceptance
+			
+			4. Onchain Tasks:
+			- PRE-EXECUTION CHECKLIST:
+				* Network: Confirm exact network name
+				* Token: Verify name matches that specified in the original quest page (e.g., "USDC", "ETH") prior to going to the external link
+				* Token: Remember the token name to be used in the transaction (The task page would say something like "Bridge any amoount of XXX to YYY", where XXX is the token name)
+				* Amount: Double-check required amount
+				* Action: Validate specific action (bridge/stake/swap)
+			- Execute only after all checks pass
+			- Verify task completion on quest platform
+			
+			5. Next task
+			Once a task is completed, proceed to the next task on the quest page and repeat the validation and execution process.
+	
+			""",
+			llm=model,
+			controller=controller,
+			browser_context=context,
+		)
+		# TaskVerificationAgent = Agent(
+		# 	task="""
+		# 		Objective: Verify Completion of questzes from quests.json
+		# 		Detailed Process:
+
+		# 		Open first quest URL from quests.json
+		# 		Quest Verification:
+
+		# 		Scroll entire page
+		# 		Refresh page to confirm task status
+		# 		Identify task completion via green tick marks
+
+		# 		Verification Criteria:
+
+		# 		Green tick mark = Task completed
+		# 		Full page scroll ensures comprehensive task review
+
+		# 		Navigation:
+
+		# 		After verifying all tasks on current quest
+		# 		Return to quests.json
+		# 		Proceed to next quest URL
+		# 		Repeat verification process
+
+		# 		Termination Condition:
+
+		# 		Complete verification of all questzes in quests.json
+
+		# 		Key Focus:
+
+		# 		Visual confirmation of task completion
+		# 		Systematic page-by-page verification
+		# 		Ensure 100% task status check
+		# 	""",
+		# 	llm=openaimodel,
+		# 	controller=controller,
+		# 	browser_context=context,
+		# )
+			
+		# QuestCompletionAgent = Agent(
+		# 	task="""
+		# 		Quest Completion Check Workflow:
+		# 		Objective: Validate Quest Completion Status
+		# 		Process:
+
+		# 		Open first quest URL from quests.json
+		# 		Status Check:
+
+		# 		Verify "Completed" or "Claimed" status
+		# 		Navigation:
+
+		# 		If completed, return to quests.json
+		# 		Proceed to next quest URL
+
+
+		# 		Repeat until all quests verified
+
+		# 		Key Focus:
+
+		# 		Systematic status confirmation
+		# 		Sequential quest processing
+		# 	""",
+		# 	llm=openaimodel,
+		# 	controller=controller,
+		# 	browser_context=context,
+		# )
+
+		
+
+		await LoginCheckerAgent.run()
+		# await AlphaHunterAgent.run()
+		await TaskCompletionAgent.run()
+		# await TaskVerificationAgent.run()
+		# await QuestCompletionAgent.run()
+
+
+asyncio.run(main())
+
+
