@@ -270,7 +270,9 @@ async def main():
 
 		
 
-		await LoginCheckerAgent.run()
+		history = await LoginCheckerAgent.run()
+		tokens = history.total_input_tokens()
+		print("Tokens used: ", tokens)
 		# await AlphaHunterAgent.run()
 		await TaskCompletionAgent.run()
 		# await TaskVerificationAgent.run()
