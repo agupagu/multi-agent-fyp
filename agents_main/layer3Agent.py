@@ -101,7 +101,7 @@ async def main():
 				Objective: Detect User Login Status
 				Detection Method:
 
-				Navigate to https://app.layer3.xyz/quests/bridge-usdc-to-flare
+				Navigate to https://app.layer3.xyz/quests
 				Wait for user to complete login process
 				Confirm login by verifying absence of "Log In" button on screen
 
@@ -119,88 +119,89 @@ async def main():
 			llm=model,
 			browser_context=context,
 		)
-		# AlphaHunterAgent = Agent(
-		# 	task="""
-		# 			Objective: Systematically capture details of the top 3 Trending Quests on app.galxe.com
-
-		# 			Detailed Steps:
-		# 			1. Navigate to app.galxe.com
-		# 			2. Locate the "Trending Quests" section by scrolling down
-		# 			3. For the first quest:
-		# 			- Click into the quest details page
-		# 			- Extract and record:
-		# 				* Full quest name
-		# 				* Complete quest URL
-		# 			- Return to the main "Trending Quests" section
-		# 			4. Repeat steps for the next two quests, maintaining the same extraction process
-
-		# 			Data Collection Requirements:
-		# 			- Capture exactly 3 quests
-		# 			- Ensure unique quest details for each entry
-		# 			- Maintain chronological order from the "Trending Quests" section
-
-		# 			Output Format:
-		# 			Provide a structured list/dictionary with the following for each quest:
-		# 			{
-		# 				"quest_name": "[Name of Quest]",
-		# 				"quest_url": "[Complete URL]"
-		# 			}
-		# 	""",
-		# 	llm=openaimodel,
-		# 	controller=controller,
-		# 	browser_context=context,
-		# )
-
-		TaskCompletionAgent = Agent(
+		AlphaHunterAgent = Agent(
 			task="""
-			Objective: Complete Tasks in Quest Page with Validation
-			
-			Before starting the task, ensure to extract the description of the task.
-			
-			Pre-execution Validation:
-			1. For each onchain task:
-			- Verify exact network (e.g., "Ethereum", "Polygon", "Arbitrum")
-			- Confirm token name
-			- Validate token amount
-			- Check wallet balance before execution
-			
-			
-			Task Categories and Steps:
-			
-			1. Social Media Tasks:
-			- Verify authentic platform URL
-			- Complete specified interaction
-			- Wait for confirmation
-			- Verify task completion status
-			
-			2. Link Click Tasks:
-			- Validate URL destination
-			- Complete click action
-			- Verify tracking completion
-			
-			3. Question/Answer Tasks:
-			- Record exact question text
-			- Submit specified answer
-			- Verify response acceptance
-			
-			4. Onchain Tasks:
-			- PRE-EXECUTION CHECKLIST:
-				* Network: Confirm exact network name
-				* Token: Verify name matches that specified in the original quest page (e.g., "USDC", "ETH") prior to going to the external link
-				* Token: Remember the token name to be used in the transaction (The task page would say something like "Bridge any amoount of XXX to YYY", where XXX is the token name)
-				* Amount: Double-check required amount
-				* Action: Validate specific action (bridge/stake/swap)
-			- Execute only after all checks pass
-			- Verify task completion on quest platform
-			
-			5. Next task
-			Once a task is completed, proceed to the next task on the quest page and repeat the validation and execution process.
-	
+					Objective: Systematically capture details of the first 3 quests for the first featured quest 
+					in the 'Featured' section of https://app.layer3.xyz/quests
+
+					Detailed Steps:
+					1. Navigate to https://app.layer3.xyz/quests
+					2. Locate the "Featured" section which will be at the top of the website
+					3. For the first quest:
+					- Click into the featured campaign that is being displayed
+					- Extract and record:
+						* Full quest name
+						* Complete quest URL
+					- Return to the main main campaign page
+					4. Repeat steps for the next two quests, maintaining the same extraction process
+
+					Data Collection Requirements:
+					- Capture exactly 3 quests
+					- Ensure unique quest details for each entry
+					- Maintain chronological order from the "Trending Quests" section
+
+					Output Format:
+					Provide a structured list/dictionary with the following for each quest:
+					{
+						"quest_name": "[Name of Quest]",
+						"quest_url": "[Complete URL]"
+					}
 			""",
-			llm=model,
+			llm=openaimodel,
 			controller=controller,
 			browser_context=context,
 		)
+
+		# TaskCompletionAgent = Agent(
+		# 	task="""
+		# 	Objective: Complete Tasks in Quest Page with Validation
+			
+		# 	Before starting the task, ensure to extract the description of the task.
+			
+		# 	Pre-execution Validation:
+		# 	1. For each onchain task:
+		# 	- Verify exact network (e.g., "Ethereum", "Polygon", "Arbitrum")
+		# 	- Confirm token name
+		# 	- Validate token amount
+		# 	- Check wallet balance before execution
+			
+			
+		# 	Task Categories and Steps:
+			
+		# 	1. Social Media Tasks:
+		# 	- Verify authentic platform URL
+		# 	- Complete specified interaction
+		# 	- Wait for confirmation
+		# 	- Verify task completion status
+			
+		# 	2. Link Click Tasks:
+		# 	- Validate URL destination
+		# 	- Complete click action
+		# 	- Verify tracking completion
+			
+		# 	3. Question/Answer Tasks:
+		# 	- Record exact question text
+		# 	- Submit specified answer
+		# 	- Verify response acceptance
+			
+		# 	4. Onchain Tasks:
+		# 	- PRE-EXECUTION CHECKLIST:
+		# 		* Network: Confirm exact network name
+		# 		* Token: Verify name matches that specified in the original quest page (e.g., "USDC", "ETH") prior to going to the external link
+		# 		* Token: Remember the token name to be used in the transaction (The task page would say something like "Bridge any amoount of XXX to YYY", where XXX is the token name)
+		# 		* Amount: Double-check required amount
+		# 		* Action: Validate specific action (bridge/stake/swap)
+		# 	- Execute only after all checks pass
+		# 	- Verify task completion on quest platform
+			
+		# 	5. Next task
+		# 	Once a task is completed, proceed to the next task on the quest page and repeat the validation and execution process.
+	
+		# 	""",
+		# 	llm=model,
+		# 	controller=controller,
+		# 	browser_context=context,
+		# )
 		# TaskVerificationAgent = Agent(
 		# 	task="""
 		# 		Objective: Verify Completion of questzes from quests.json
@@ -270,11 +271,13 @@ async def main():
 
 		
 
-		history = await LoginCheckerAgent.run()
-		tokens = history.total_input_tokens()
-		print("Tokens used: ", tokens)
-		# await AlphaHunterAgent.run()
-		await TaskCompletionAgent.run()
+		LoginCheckerAgenthistory = await LoginCheckerAgent.run()
+		LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
+		print("Tokens used for LoginCheckerAgent: ", LoginCheckerAgenthistoryTokens)
+		AlphaHunterAgenthistory = await AlphaHunterAgent.run()
+		AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
+		print("Tokens used for AlphaHunterAgent: ", AlphaHunterAgenthistoryTokens)
+		# await TaskCompletionAgent.run()
 		# await TaskVerificationAgent.run()
 		# await QuestCompletionAgent.run()
 
