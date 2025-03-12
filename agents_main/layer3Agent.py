@@ -261,10 +261,10 @@ async def main():
 
 		LoginCheckerAgenthistory = await LoginCheckerAgent.run()
 		LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
-		print("Tokens used for LoginCheckerAgent: ", LoginCheckerAgenthistoryTokens)
+		print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
 		AlphaHunterAgenthistory = await AlphaHunterAgent.run()
 		AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
-		print("Tokens used for AlphaHunterAgent: ", AlphaHunterAgenthistoryTokens)
+		print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
 		# await TaskCompletionAgent.run()
 		# await TaskVerificationAgent.run()
 		# await QuestCompletionAgent.run()
