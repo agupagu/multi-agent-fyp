@@ -73,8 +73,7 @@ async def main():
 		TesterAgent = Agent(
 			task="""
 				1. Go to google.com and search "cat"
-				2. Open a new tab and go to google.com and search for "dog"
-				3. Go back to the cat google page and search for "bird"
+
 			""",
 			llm=openaimodel,
 			browser_context=context,
@@ -105,7 +104,7 @@ async def main():
 
 
 
-		await TesterAgent.run()
+		history = await TesterAgent.run()
 		
 		# await NextStepAgent.run()
 		# await VerifyAgent.run()
