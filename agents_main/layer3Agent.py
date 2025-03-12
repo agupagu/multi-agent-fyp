@@ -45,18 +45,6 @@ class elment_on_page(BaseModel):
 	index: int
 	xpath: Optional[str] = None
 
-# @controller.action("Get XPath of element using index", param_model=elment_on_page)
-# async def get_xpath_of_element(params: elment_on_page, browser: BrowserContext):
-#     session = await browser.get_session()
-#     state = session.cached_state
-#     if params.index not in state.selector_map:
-#         return ActionResult(error="Element not found")
-
-#     element_node = state.selector_map[params.index]
-#     xpath = element_node.xpath
-#     if(xpath is None):
-#         return ActionResult(error="Element not found, try another index")
-#     return ActionResult(extracted_content="The xpath of the element is "+xpath, include_in_memory=True)
 
 
 @controller.action('Save quests to a file named quests.json', param_model=Quests)
@@ -122,11 +110,11 @@ async def main():
 		AlphaHunterAgent = Agent(
 			task="""
 					Objective: Systematically capture details of the first 3 quests for the first featured quest 
-					in the 'Featured' section of https://app.layer3.xyz/quests
+					in the 'New' section of https://app.layer3.xyz/quests
 
 					Detailed Steps:
 					1. Navigate to https://app.layer3.xyz/quests
-					2. Locate the "Featured" section which will be at the top of the website
+					2. Locate the "New" section which will have 3 quests listed below it
 					3. For the first quest:
 					- Click into the featured campaign that is being displayed
 					- Extract and record:
