@@ -28,22 +28,22 @@ class Quests(BaseModel):
 
 @controller.action('Save quests to a file named quests.json', param_model=Quests)
 def save_quests(params: Quests):
-    file_path = 'quests.json'
+	file_path = 'quests.json'
 
-    # Load existing data if the file exists
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
-            quests = json.load(f)
-    else:
-        quests = []
+	# Load existing data if the file exists
+	if os.path.exists(file_path):
+		with open(file_path, 'r') as f:
+			quests = json.load(f)
+	else:
+		quests = []
 
-    # Append new quests
-    for quest in params.quests:
-        quests.append({"name": quest.name, "url": quest.url})
+	# Append new quests
+	for quest in params.quests:
+		quests.append({"name": quest.name, "url": quest.url})
 
-    # Write the updated data to the JSON file
-    with open(file_path, 'w') as f:
-        json.dump(quests, f, indent=4)
+	# Write the updated data to the JSON file
+	with open(file_path, 'w') as f:
+		json.dump(quests, f, indent=4)
 
 @controller.action('Read quests from quests.json file')
 def read_quests():
@@ -56,14 +56,14 @@ async def main():
 
 
 	browser = Browser(
-    config=BrowserConfig(
-        headless=False,
-        chrome_instance_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',  # Adjust this path for your OS
-    	)
+	config=BrowserConfig(
+		headless=False,
+		chrome_instance_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',  # Adjust this path for your OS
+		)
 	)
 
 	async with await browser.new_context() as context:
-		model = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', timeout=25, stop=None, temperature=0.3)
+		model = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
 		openaimodel = ChatOpenAI(model='gpt-4o')
 
 
@@ -88,7 +88,7 @@ async def main():
 
 				Note: Rely on visual UI state change as login confirmation mechanism.
 			""",
-			llm=openaimodel,
+			llm=model,
 			browser_context=context,
 		)
 		AlphaHunterAgent = Agent(
@@ -117,8 +117,10 @@ async def main():
 						"quest_name": "[Name of Quest]",
 						"quest_url": "[Complete URL]"
 					}
+
+					Save the extracted quests to a file named quests.json
 			""",
-			llm=openaimodel,
+			llm=model,
 			controller=controller,
 			browser_context=context,
 		)
@@ -143,7 +145,7 @@ async def main():
 
 				Scroll entire page
 				Confirm all tasks completed
-                        
+						
 				Navigation:
 
 				Return to quests.json
@@ -158,7 +160,7 @@ async def main():
 				Comprehensive page verification
 				Sequential quest processing
 			""",
-			llm=openaimodel,
+			llm=model,
 			controller=controller,
 			browser_context=context,
 		)
@@ -196,11 +198,11 @@ async def main():
 				Systematic page-by-page verification
 				Ensure 100% task status check
 			""",
-			llm=openaimodel,
+			llm=model,
 			controller=controller,
 			browser_context=context,
 		)
-            
+			
 		QuestCompletionAgent = Agent(
 			task="""
 				Quest Completion Check Workflow:
@@ -224,17 +226,22 @@ async def main():
 				Systematic status confirmation
 				Sequential quest processing
 			""",
-			llm=openaimodel,
+			llm=model,
 			controller=controller,
 			browser_context=context,
 		)
 
 
-		await LoginCheckerAgent.run()
-		await AlphaHunterAgent.run()
-		await TaskCompletionAgent.run()
-		await TaskVerificationAgent.run()	
-		await QuestCompletionAgent.run()
+		loginCheckerAgenthistory = await LoginCheckerAgent.run()
+		print(f"Login Checker Agent History: {loginCheckerAgenthistory.total_input_tokens()}")
+		AlphaHunterAgenthistory= await AlphaHunterAgent.run()
+		print(f"Alpha Hunter Agent History: {AlphaHunterAgenthistory.total_input_tokens()}")
+		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
+		print(f"Task Completion Agent History: {TaskCompletionAgenthistory.total_input_tokens()}")
+		TaskVerificationAgenthistory = await TaskVerificationAgent.run()	
+		print(f"Task Verification Agent History: {TaskVerificationAgenthistory.total_input_tokens()}")
+		QuestCompletionAgenthistory = await QuestCompletionAgent.run()
+		print(f"Quest Completion Agent History: {QuestCompletionAgenthistory.total_input_tokens()}")
 
 
 asyncio.run(main())

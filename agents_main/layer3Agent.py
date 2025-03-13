@@ -47,9 +47,9 @@ class elment_on_page(BaseModel):
 
 
 
-@controller.action('Save quests to a file named quests.json', param_model=Quests)
+@controller.action('Save quests to a file named Layer3quests.json', param_model=Quests)
 def save_quests(params: Quests):
-	file_path = 'quests.json'
+	file_path = 'Layer3quests.json'
 
 	# Load existing data if the file exists
 	if os.path.exists(file_path):
@@ -66,9 +66,9 @@ def save_quests(params: Quests):
 	with open(file_path, 'w') as f:
 		json.dump(quests, f, indent=4)
 
-@controller.action('Read quests from quests.json file')
+@controller.action('Read quests from Layer3quests.json file')
 def read_quests():
-	with open('quests.json', 'r') as f:
+	with open('Layer3quests.json', 'r') as f:
 		return f.read()
 	  
 
@@ -134,8 +134,11 @@ async def main():
 						"quest_name": "[Name of Quest]",
 						"quest_url": "[Complete URL]"
 					}
+
+					Save the extracted quests to a file named quests.json
+
 			""",
-			llm=openaimodel,
+			llm=model,
 			controller=controller,
 			browser_context=context,
 		)
