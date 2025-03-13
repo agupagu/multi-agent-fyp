@@ -143,56 +143,56 @@ async def main():
 			browser_context=context,
 		)
 
-		# TaskCompletionAgent = Agent(
-		# 	task="""
-		# 	Objective: Complete Tasks in Quest Page with Validation
+		TaskCompletionAgent = Agent(
+			task="""
+			Objective: Complete Tasks in Quest Page with Validation
 			
-		# 	Before starting the task, ensure to extract the description of the task.
+			Before starting the task, ensure to extract the description of the task.
 			
-		# 	Pre-execution Validation:
-		# 	1. For each onchain task:
-		# 	- Verify exact network (e.g., "Ethereum", "Polygon", "Arbitrum")
-		# 	- Confirm token name
-		# 	- Validate token amount
-		# 	- Check wallet balance before execution
+			Pre-execution Validation:
+			1. For each onchain task:
+			- Verify exact network (e.g., "Ethereum", "Polygon", "Arbitrum")
+			- Confirm token name
+			- Validate token amount
+			- Check wallet balance before execution
 			
 			
-		# 	Task Categories and Steps:
+			Task Categories and Steps:
 			
-		# 	1. Social Media Tasks:
-		# 	- Verify authentic platform URL
-		# 	- Complete specified interaction
-		# 	- Wait for confirmation
-		# 	- Verify task completion status
+			1. Social Media Tasks:
+			- Verify authentic platform URL
+			- Complete specified interaction
+			- Wait for confirmation
+			- Verify task completion status
 			
-		# 	2. Link Click Tasks:
-		# 	- Validate URL destination
-		# 	- Complete click action
-		# 	- Verify tracking completion
+			2. Link Click Tasks:
+			- Validate URL destination
+			- Complete click action
+			- Verify tracking completion
 			
-		# 	3. Question/Answer Tasks:
-		# 	- Record exact question text
-		# 	- Submit specified answer
-		# 	- Verify response acceptance
+			3. Question/Answer Tasks:
+			- Record exact question text
+			- Submit specified answer
+			- Verify response acceptance
 			
-		# 	4. Onchain Tasks:
-		# 	- PRE-EXECUTION CHECKLIST:
-		# 		* Network: Confirm exact network name
-		# 		* Token: Verify name matches that specified in the original quest page (e.g., "USDC", "ETH") prior to going to the external link
-		# 		* Token: Remember the token name to be used in the transaction (The task page would say something like "Bridge any amoount of XXX to YYY", where XXX is the token name)
-		# 		* Amount: Double-check required amount
-		# 		* Action: Validate specific action (bridge/stake/swap)
-		# 	- Execute only after all checks pass
-		# 	- Verify task completion on quest platform
+			4. Onchain Tasks:
+			- PRE-EXECUTION CHECKLIST:
+				* Network: Confirm exact network name
+				* Token: Verify name matches that specified in the original quest page (e.g., "USDC", "ETH") prior to going to the external link
+				* Token: Remember the token name to be used in the transaction (The task page would say something like "Bridge any amoount of XXX to YYY", where XXX is the token name)
+				* Amount: Double-check required amount
+				* Action: Validate specific action (bridge/stake/swap)
+			- Execute only after all checks pass
+			- Verify task completion on quest platform
 			
-		# 	5. Next task
-		# 	Once a task is completed, proceed to the next task on the quest page and repeat the validation and execution process.
+			5. Next task
+			Once a task is completed, proceed to the next task on the quest page and repeat the validation and execution process.
 	
-		# 	""",
-		# 	llm=model,
-		# 	controller=controller,
-		# 	browser_context=context,
-		# )
+			""",
+			llm=model,
+			controller=controller,
+			browser_context=context,
+		)
 		# TaskVerificationAgent = Agent(
 		# 	task="""
 		# 		Objective: Verify Completion of questzes from quests.json
@@ -262,13 +262,15 @@ async def main():
 
 		
 
-		LoginCheckerAgenthistory = await LoginCheckerAgent.run()
-		LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
-		print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
-		AlphaHunterAgenthistory = await AlphaHunterAgent.run()
-		AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
-		print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
-		# await TaskCompletionAgent.run()
+		# LoginCheckerAgenthistory = await LoginCheckerAgent.run()
+		# LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
+		# print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
+		# AlphaHunterAgenthistory = await AlphaHunterAgent.run()
+		# AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
+		# print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
+		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
+		TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		print("Tokens used for TaskCompletionAgent:", TaskCompletionAgenthistoryTokens)
 		# await TaskVerificationAgent.run()
 		# await QuestCompletionAgent.run()
 
