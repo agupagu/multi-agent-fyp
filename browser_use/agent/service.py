@@ -753,7 +753,7 @@ class Agent(Generic[Context]):
 	async def rerun_history(
 		self,
 		history: AgentHistoryList,
-		max_retries: int = 3,
+		max_retries: int = 5,
 		skip_failures: bool = True,
 		delay_between_actions: float = 2.0,
 	) -> list[ActionResult]:

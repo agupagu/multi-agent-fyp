@@ -145,9 +145,11 @@ async def main():
 
 		TaskCompletionAgent = Agent(
 			task="""
-			Objective: Complete Tasks in Quest Page with Validation
+			Objective: Complete quests in Layer3quests.json
+
+			Each quest comprises of multiple tasks. Complete each task in the quest.
 			
-			Before starting the task, ensure to extract the description of the task.
+			Before starting a task, ensure to extract the description of the task.
 			
 			Pre-execution Validation:
 			1. For each onchain task:
@@ -155,7 +157,10 @@ async def main():
 			- Confirm token name
 			- Validate token amount
 			- Check wallet balance before execution
-			
+
+			If the task is optional press the skip button and move to the next task.
+			Always press the verify button before starting the task in the vent the user has already completed the task previously.
+			If the tasks have already been marked as complete by a green tick mark, skip the task and move to the next task.
 			
 			Task Categories and Steps:
 			
@@ -186,79 +191,81 @@ async def main():
 			- Verify task completion on quest platform
 			
 			5. Next task
-			Once a task is completed, proceed to the next task on the quest page and repeat the validation and execution process.
+			Once a task is completed, proceed to the next task and repeat the validation and execution process.
 	
 			""",
 			llm=model,
 			controller=controller,
 			browser_context=context,
+			use_vision=False,
 		)
-		# TaskVerificationAgent = Agent(
-		# 	task="""
-		# 		Objective: Verify Completion of questzes from quests.json
-		# 		Detailed Process:
 
-		# 		Open first quest URL from quests.json
-		# 		Quest Verification:
+		TaskVerificationAgent = Agent(
+			task="""
+				Objective: Verify Completion of quests from Layer3quests.json
+				Detailed Process:
 
-		# 		Scroll entire page
-		# 		Refresh page to confirm task status
-		# 		Identify task completion via green tick marks
+				Open first quest URL from Layer3quests.json
+				Quest Verification:
 
-		# 		Verification Criteria:
+				Identify task completion via green tick marks on the left and a completed status
 
-		# 		Green tick mark = Task completed
-		# 		Full page scroll ensures comprehensive task review
+				Verification Criteria:
 
-		# 		Navigation:
+				Green tick mark = Task completed
+				Full page scroll ensures comprehensive task review
 
-		# 		After verifying all tasks on current quest
-		# 		Return to quests.json
-		# 		Proceed to next quest URL
-		# 		Repeat verification process
+				Navigation:
 
-		# 		Termination Condition:
+				After verifying all tasks on current quest
+				Return to Layer3quests.json
+				Proceed to next quest URL
+				Repeat verification process
 
-		# 		Complete verification of all questzes in quests.json
+				Termination Condition:
 
-		# 		Key Focus:
+				Complete verification of all questzes in Layer3quests.json
 
-		# 		Visual confirmation of task completion
-		# 		Systematic page-by-page verification
-		# 		Ensure 100% task status check
-		# 	""",
-		# 	llm=openaimodel,
-		# 	controller=controller,
-		# 	browser_context=context,
-		# )
+				Key Focus:
+
+				Visual confirmation of task completion
+				Systematic page-by-page verification
+				Ensure 100% task status check
+			""",
+			llm=openaimodel,
+			controller=controller,
+			browser_context=context,
+			use_vision=False,
+		)
 			
-		# QuestCompletionAgent = Agent(
-		# 	task="""
-		# 		Quest Completion Check Workflow:
-		# 		Objective: Validate Quest Completion Status
-		# 		Process:
+		QuestCompletionAgent = Agent(
+			task="""
+				Quest Completion Check Workflow:
+				Objective: Validate Quest Completion Status
+				Process:
 
-		# 		Open first quest URL from quests.json
-		# 		Status Check:
+				Open first quest URL Layer3quests.json
+				Status Check:
 
-		# 		Verify "Completed" or "Claimed" status
-		# 		Navigation:
+				Verify "Completed" or "Claimed" status
+				Navigation:
 
-		# 		If completed, return to quests.json
-		# 		Proceed to next quest URL
+				If completed, return to Layer3quests.json
+				Proceed to next quest URL
 
 
-		# 		Repeat until all quests verified
+				Repeat until all quests verified
 
-		# 		Key Focus:
+				Key Focus:
 
-		# 		Systematic status confirmation
-		# 		Sequential quest processing
-		# 	""",
-		# 	llm=openaimodel,
-		# 	controller=controller,
-		# 	browser_context=context,
-		# )
+				Systematic status confirmation
+				Sequential quest processing
+			""",
+			llm=openaimodel,
+			controller=controller,
+			browser_context=context,
+			use_vision=False,
+		)
 
 		
 
@@ -271,8 +278,8 @@ async def main():
 		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
 		TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
 		print("Tokens used for TaskCompletionAgent:", TaskCompletionAgenthistoryTokens)
-		# await TaskVerificationAgent.run()
-		# await QuestCompletionAgent.run()
+		await TaskVerificationAgent.run()
+		await QuestCompletionAgent.run()
 
 
 asyncio.run(main())

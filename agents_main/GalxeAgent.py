@@ -26,9 +26,9 @@ class Quests(BaseModel):
 	quests: List[Quest]
 
 
-@controller.action('Save quests to a file named quests.json', param_model=Quests)
+@controller.action('Save quests to a file named Galxequests.json', param_model=Quests)
 def save_quests(params: Quests):
-	file_path = 'quests.json'
+	file_path = 'Galxequests.json'
 
 	# Load existing data if the file exists
 	if os.path.exists(file_path):
@@ -45,9 +45,9 @@ def save_quests(params: Quests):
 	with open(file_path, 'w') as f:
 		json.dump(quests, f, indent=4)
 
-@controller.action('Read quests from quests.json file')
+@controller.action('Read quests from Galxequests.json file')
 def read_quests():
-	with open('quests.json', 'r') as f:
+	with open('Galxequests.json', 'r') as f:
 		return f.read()
 
 # Video: https://preview.screen.studio/share/8Elaq9sm
@@ -73,7 +73,7 @@ async def main():
 				Objective: Detect User Login Status
 				Detection Method:
 
-				Navigate to app.galxe.com
+				Navigate to https://app.galxe.com/quest/explore/all?sortType=Trending
 				Wait for user to complete login process
 				Confirm login by verifying absence of "Log In" button on screen
 
@@ -93,12 +93,11 @@ async def main():
 		)
 		AlphaHunterAgent = Agent(
 			task="""
-					Objective: Systematically capture details of the top 3 Trending Quests on app.galxe.com
+					Objective: Systematically capture details of the top 3 Trending Quests
 
 					Detailed Steps:
-					1. Navigate to app.galxe.com
-					2. Locate the "Trending Quests" section by scrolling down
-					3. For the first quest:
+					1. Locate the Quests section by scrolling down
+					2. For the first quest:
 					- Click into the quest details page
 					- Extract and record:
 						* Full quest name
@@ -118,7 +117,7 @@ async def main():
 						"quest_url": "[Complete URL]"
 					}
 
-					Save the extracted quests to a file named quests.json
+					Save the extracted quests to a file named Galxequests.json
 			""",
 			llm=model,
 			controller=controller,
@@ -130,14 +129,19 @@ async def main():
 				Objective: Complete Tasks in Each Quest
 				Process:
 
-				Open first quest URL from quests.json
+				Open first quest URL from Galxequests.json
 				Identify task list within quest
 				Task Execution:
 
-				Click into each task
-				Complete specified actions
+				Click into each task link and complete the required actions
+				Complete specified actions for each task
 
-				Social media interactions (X/Twitter)
+				ONLY for tasks involving Telegram, wait for 30 seconds to allow the user to complete the task and then proceed to the next task.
+				ONLY for tasks involving Discord, skip the task and move on to the next task
+				For other social media platforms proceed as per usual according to your instructions.
+
+
+				Social media interactions (X/Twitter)- Liking, Follwing, Retweeting
 				Link clicks
 				Question answering
 
@@ -148,7 +152,7 @@ async def main():
 						
 				Navigation:
 
-				Return to quests.json
+				Return to Galxequests.json
 				Proceed to next quest URL
 
 
@@ -166,10 +170,10 @@ async def main():
 		)
 		TaskVerificationAgent = Agent(
 			task="""
-				Objective: Verify Completion of quests from quests.json
+				Objective: Verify Completion of quests from Galxequests.json
 				Detailed Process:
 
-				Open first quest URL from quests.json
+				Open first quest URL from Galxequests.json
 				Quest Verification:
 
 				Scroll entire page
@@ -184,13 +188,13 @@ async def main():
 				Navigation:
 
 				After verifying all tasks on current quest
-				Return to quests.json
+				Return to Galxequests.json
 				Proceed to next quest URL
 				Repeat verification process
 
 				Termination Condition:
 
-				Complete verification of all questzes in quests.json
+				Complete verification of all questzes in Galxequests.json
 
 				Key Focus:
 
@@ -209,13 +213,13 @@ async def main():
 				Objective: Validate Quest Completion Status
 				Process:
 
-				Open first quest URL from quests.json
+				Open first quest URL from Galxequests.json
 				Status Check:
 
 				Verify "Completed" or "Claimed" status
 				Navigation:
 
-				If completed, return to quests.json
+				If completed, return to Galxequests.json
 				Proceed to next quest URL
 
 
@@ -232,10 +236,10 @@ async def main():
 		)
 
 
-		loginCheckerAgenthistory = await LoginCheckerAgent.run()
-		print(f"Login Checker Agent History: {loginCheckerAgenthistory.total_input_tokens()}")
-		AlphaHunterAgenthistory= await AlphaHunterAgent.run()
-		print(f"Alpha Hunter Agent History: {AlphaHunterAgenthistory.total_input_tokens()}")
+		# loginCheckerAgenthistory = await LoginCheckerAgent.run()
+		# print(f"Login Checker Agent History: {loginCheckerAgenthistory.total_input_tokens()}")
+		# AlphaHunterAgenthistory= await AlphaHunterAgent.run()
+		# print(f"Alpha Hunter Agent History: {AlphaHunterAgenthistory.total_input_tokens()}")
 		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
 		print(f"Task Completion Agent History: {TaskCompletionAgenthistory.total_input_tokens()}")
 		TaskVerificationAgenthistory = await TaskVerificationAgent.run()	
