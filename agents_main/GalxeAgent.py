@@ -133,7 +133,7 @@ async def main():
 				Identify task list within quest
 				Task Execution:
 
-				Click into each task link and complete the required actions
+				Click on the text of each task to be redirected to the correct link to complete the task
 				Complete specified actions for each task
 
 				ONLY for tasks involving Telegram, wait for 30 seconds to allow the user to complete the task and then proceed to the next task.
@@ -217,6 +217,8 @@ async def main():
 				Status Check:
 
 				Verify "Completed" or "Claimed" status
+				If the quest is not completed, check for the presence of a "Claim", "Participate" or a button of similar nature.
+				Press that button to complete the quest if it has not already been pressed.
 				Navigation:
 
 				If completed, return to Galxequests.json
@@ -240,10 +242,10 @@ async def main():
 		# print(f"Login Checker Agent History: {loginCheckerAgenthistory.total_input_tokens()}")
 		# AlphaHunterAgenthistory= await AlphaHunterAgent.run()
 		# print(f"Alpha Hunter Agent History: {AlphaHunterAgenthistory.total_input_tokens()}")
-		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
-		print(f"Task Completion Agent History: {TaskCompletionAgenthistory.total_input_tokens()}")
-		TaskVerificationAgenthistory = await TaskVerificationAgent.run()	
-		print(f"Task Verification Agent History: {TaskVerificationAgenthistory.total_input_tokens()}")
+		# TaskCompletionAgenthistory = await TaskCompletionAgent.run()
+		# print(f"Task Completion Agent History: {TaskCompletionAgenthistory.total_input_tokens()}")
+		# TaskVerificationAgenthistory = await TaskVerificationAgent.run()	
+		# print(f"Task Verification Agent History: {TaskVerificationAgenthistory.total_input_tokens()}")
 		QuestCompletionAgenthistory = await QuestCompletionAgent.run()
 		print(f"Quest Completion Agent History: {QuestCompletionAgenthistory.total_input_tokens()}")
 

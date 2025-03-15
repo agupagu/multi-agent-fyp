@@ -78,7 +78,7 @@ async def main():
 	# Persist the browser state across agents
 
 	async with await browser.new_context() as context:
-		model = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
+		ClaudeModel = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
 		openaimodel = ChatOpenAI(model='gpt-4o', temperature=0.3)
 	
 
@@ -104,7 +104,7 @@ async def main():
 
 				Note: Rely on visual UI state change as login confirmation mechanism.
 			""",
-			llm=model,
+			llm=ClaudeModel,
 			browser_context=context,
 		)
 		AlphaHunterAgent = Agent(
@@ -135,10 +135,10 @@ async def main():
 						"quest_url": "[Complete URL]"
 					}
 
-					Save the extracted quests to a file named quests.json
+					Save the extracted quests to a file named Layer3quests.json
 
 			""",
-			llm=model,
+			llm=ClaudeModel,
 			controller=controller,
 			browser_context=context,
 		)
@@ -153,13 +153,14 @@ async def main():
 			
 			Pre-execution Validation:
 			1. For each onchain task:
+			- Wait for 20 seconds for the user to connect their wallet (This is a must)
 			- Verify exact network (e.g., "Ethereum", "Polygon", "Arbitrum")
 			- Confirm token name
 			- Validate token amount
 			- Check wallet balance before execution
 
 			If the task is optional press the skip button and move to the next task.
-			Always press the verify button before starting the task in the vent the user has already completed the task previously.
+			Always press the verify button before starting the task in the event the user has already completed the task previously.
 			If the tasks have already been marked as complete by a green tick mark, skip the task and move to the next task.
 			
 			Task Categories and Steps:
@@ -189,15 +190,18 @@ async def main():
 				* Action: Validate specific action (bridge/stake/swap)
 			- Execute only after all checks pass
 			- Verify task completion on quest platform
+
+			5. Claim rewards associated with the task by clicking the "Mint Cube" button or a button of similar nature to claim rewards.
 			
 			5. Next task
 			Once a task is completed, proceed to the next task and repeat the validation and execution process.
+
+			ONLY COMPLETE QUESTS IN Layer3quests.json and nothing else. Once a quest has been completed, move on to the next quest in Layer3quests.json.
 	
 			""",
-			llm=model,
+			llm=ClaudeModel,
 			controller=controller,
 			browser_context=context,
-			use_vision=False,
 		)
 
 		TaskVerificationAgent = Agent(
@@ -209,6 +213,7 @@ async def main():
 				Quest Verification:
 
 				Identify task completion via green tick marks on the left and a completed status
+				Claim all rewards if the quest is completed. If there is an option to switch to another network, click that button and proceed with claiming the rewards.
 
 				Verification Criteria:
 
@@ -224,7 +229,7 @@ async def main():
 
 				Termination Condition:
 
-				Complete verification of all questzes in Layer3quests.json
+				Complete verification of all quests in Layer3quests.json
 
 				Key Focus:
 
@@ -232,7 +237,7 @@ async def main():
 				Systematic page-by-page verification
 				Ensure 100% task status check
 			""",
-			llm=openaimodel,
+			llm=ClaudeModel,
 			controller=controller,
 			browser_context=context,
 			use_vision=False,
@@ -244,7 +249,7 @@ async def main():
 				Objective: Validate Quest Completion Status
 				Process:
 
-				Open first quest URL Layer3quests.json
+				Open first quest URL Layer3quests.json in a new tab. DO NOT use the original layer3.xyz tab that is already open. Do this for all links in Layer3quests.json
 				Status Check:
 
 				Verify "Completed" or "Claimed" status
@@ -261,25 +266,46 @@ async def main():
 				Systematic status confirmation
 				Sequential quest processing
 			""",
-			llm=openaimodel,
+			llm=ClaudeModel,
 			controller=controller,
 			browser_context=context,
-			use_vision=False,
 		)
 
 		
 
 		# LoginCheckerAgenthistory = await LoginCheckerAgent.run()
 		# LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
+		# LoginCheckerAgenthistorytime = LoginCheckerAgenthistory.total_duration_seconds()
 		# print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
+		# print("Time taken for LoginCheckerAgent:", LoginCheckerAgenthistorytime)
+
+
 		# AlphaHunterAgenthistory = await AlphaHunterAgent.run()
 		# AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
+		# AlphaHunterAgenthistorytime = AlphaHunterAgenthistory.total_duration_seconds()
 		# print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
+		# print("Time taken for AlphaHunterAgent:", AlphaHunterAgenthistorytime)
+
+
 		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
 		TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
 		print("Tokens used for TaskCompletionAgent:", TaskCompletionAgenthistoryTokens)
-		await TaskVerificationAgent.run()
-		await QuestCompletionAgent.run()
+		print("Time taken for TaskCompletionAgent:", TaskCompletionAgenthistorytime)
+
+
+		TaskCompletionAgenthistory = await TaskVerificationAgent.run()
+		TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
+		print("Tokens used for TaskVerificationAgent:", TaskCompletionAgenthistoryTokens)
+		print("Time taken for TaskVerificationAgent:", TaskCompletionAgenthistorytime)
+
+
+		QuestCompletionAgenthistory = await QuestCompletionAgent.run()
+		QuestCompletionAgenthistoryTokens = QuestCompletionAgenthistory.total_input_tokens()
+		QuestCompletionAgenthistorytime = QuestCompletionAgenthistory.total_duration_seconds()
+		print("Tokens used for QuestCompletionAgent:", QuestCompletionAgenthistoryTokens)
+		print("Time taken for QuestCompletionAgent:", QuestCompletionAgenthistorytime)
 
 
 asyncio.run(main())

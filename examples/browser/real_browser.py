@@ -65,20 +65,18 @@ async def main():
 	)
 
 	async with await browser.new_context() as context:
-		model = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', timeout=25, stop=None, temperature=0.3)
+		model = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
 		openaimodel = ChatOpenAI(model='gpt-4o')
 
 
 		# Initialize browser agent
 		TesterAgent = Agent(
 			task="""
-				1. Go to google.com and search "cat"
+				1. Go to jumper.exchange and bridge 0.001 ETH from Optimism to Base
 
 			""",
-			llm=openaimodel,
+			llm=model,
 			browser_context=context,
-			use_vision=False,
-			generate_gif=False,	
 		)
 			
 		# NextStepAgent = Agent(
