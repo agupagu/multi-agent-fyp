@@ -152,6 +152,11 @@ async def main():
 			Open the first quest URL from Layer3quests.json in a new tab. DO NOT use the original layer3.xyz tab that is already open. Do this for all links in Layer3quests.json
 			
 			Before starting a task, ensure to extract the description of the task.
+
+			If the task is optional press the skip button and move to the next task.
+			ALWAYS press the continue button before starting the task in the even the user has already completed the task previously. This is a must for every task.
+			ALWAYS press the verify button before starting the task in the event the user has already completed the task previously.This is a must for every task.
+			If the tasks have already been marked as complete by a green tick mark, skip the task and move to the next task.
 			
 			Pre-execution Validation:
 			1. For each onchain task:
@@ -161,9 +166,6 @@ async def main():
 			- Validate token amount
 			- Check wallet balance before execution
 
-			If the task is optional press the skip button and move to the next task.
-			Always press the verify button before starting the task in the event the user has already completed the task previously.
-			If the tasks have already been marked as complete by a green tick mark, skip the task and move to the next task.
 			
 			Task Categories and Steps:
 			
@@ -195,7 +197,11 @@ async def main():
 			- Execute only after all checks pass
 			- Verify task completion on quest platform
 
-			5. Claim rewards associated with the task by clicking the "Mint Cube" button or a button of similar nature to claim rewards. If there is an option to switch to another network,
+			5. Claim rewards associated with the task by clicking the "Mint Cube" button or a button of similar nature to claim rewards.
+
+			If there is an option to connect wallet, click that button and click the "WalletConnect" button to connect the wallet.
+			
+			If there is an option to switch to another network,
 			("Switch to Polygon" or "Switch to Arbitrum") click that button first and then proceed with claiming the rewards.
 			
 			5. Next task
