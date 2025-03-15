@@ -131,6 +131,8 @@ env.bak/
 venv.bak/
 test_env/
 localdev/
+myenv/
+older-venv/
 
 
 # Spyder project settings

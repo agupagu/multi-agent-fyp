@@ -148,6 +148,8 @@ async def main():
 			Objective: Complete quests in Layer3quests.json
 
 			Each quest comprises of multiple tasks. Complete each task in the quest.
+
+			Open the first quest URL from Layer3quests.json in a new tab. DO NOT use the original layer3.xyz tab that is already open. Do this for all links in Layer3quests.json
 			
 			Before starting a task, ensure to extract the description of the task.
 			
@@ -186,12 +188,15 @@ async def main():
 				* Network: Confirm exact network name
 				* Token: Verify name matches that specified in the original quest page (e.g., "USDC", "ETH") prior to going to the external link
 				* Token: Remember the token name to be used in the transaction (The task page would say something like "Bridge any amoount of XXX to YYY", where XXX is the token name)
+				* IF the requirement is any amount of a token, use the smallest possible amount to complete the task
+				* IF the requirement is any token, select the token which has the largest balance in the wallet
 				* Amount: Double-check required amount
 				* Action: Validate specific action (bridge/stake/swap)
 			- Execute only after all checks pass
 			- Verify task completion on quest platform
 
-			5. Claim rewards associated with the task by clicking the "Mint Cube" button or a button of similar nature to claim rewards.
+			5. Claim rewards associated with the task by clicking the "Mint Cube" button or a button of similar nature to claim rewards. If there is an option to switch to another network,
+			("Switch to Polygon" or "Switch to Arbitrum") click that button first and then proceed with claiming the rewards.
 			
 			5. Next task
 			Once a task is completed, proceed to the next task and repeat the validation and execution process.
