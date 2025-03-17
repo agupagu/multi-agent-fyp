@@ -76,8 +76,7 @@ async def main():
 
 			""",
 			llm=model,
-			browser_context=context,
-		)
+			browser_context=context)
 			
 		# NextStepAgent = Agent(
 		# 	task="""

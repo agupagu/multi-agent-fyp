@@ -63,8 +63,8 @@ async def main():
 	)
 
 	async with await browser.new_context() as context:
-		model = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
-		openaimodel = ChatOpenAI(model='gpt-4o')
+		ClaudeAIModel = ChatAnthropic(model_name='claude-3-7-sonnet-20250219', timeout=25, stop=None, temperature=0.3)
+		OpenAIModel = ChatOpenAI(model='gpt-4o', temperature=0.3)
 
 
 		# Initialize browser agent
@@ -88,7 +88,7 @@ async def main():
 
 				Note: Rely on visual UI state change as login confirmation mechanism.
 			""",
-			llm=model,
+			llm=ClaudeAIModel,
 			browser_context=context,
 		)
 		AlphaHunterAgent = Agent(
@@ -101,7 +101,7 @@ async def main():
 					- Click into the quest details page
 					- Extract and record:
 						* Full quest name
-						* Complete quest URL
+						* Complete quest URL (Not just the path)
 					- Return to the main "Trending Quests" section
 					4. Repeat steps for the next two quests, maintaining the same extraction process
 
@@ -119,90 +119,118 @@ async def main():
 
 					Save the extracted quests to a file named Galxequests.json
 			""",
-			llm=model,
+			llm=ClaudeAIModel,
 			controller=controller,
 			browser_context=context,
 		)
 
 		TaskCompletionAgent = Agent(
 			task="""
-				Objective: Complete Tasks in Each Quest
-				Process:
+				OBJECTIVE: Complete All Tasks in Each Quest
 
-				Open first quest URL from Galxequests.json
-				Identify task list within quest
-				Task Execution:
+				PROCESS OVERVIEW:
+				1. Access each quest URL sequentially from Galxequests.json (DO NOT DO ANY OTHER QUESTS APART FROM THOSE IN Galxequests.json)
+				2. Identify all required tasks for the current quest
+				2. Extract the information for each task
+				4. Complete each task methodically
+				5. Verify completion
+				6. Move to next quest
 
-				Click on the text of each task to be redirected to the correct link to complete the task
-				Complete specified actions for each task
+				DETAILED TASK EXECUTION:
+				1. TASK IDENTIFICATION
+				- Scan the entire quest page to identify all required tasks
+				- Extract the task information including the task text and action required
+				- Understand each task requirement before attempting completion
 
-				ONLY for tasks involving Telegram, wait for 30 seconds to allow the user to complete the task and then proceed to the next task.
-				ONLY for tasks involving Discord, skip the task and move on to the next task
-				For other social media platforms proceed as per usual according to your instructions.
+				2. TASK COMPLETION
+				- For clickable tasks: Click directly on the task text (NOT surrounding elements) to be redirected
+				- Example: For "Follow @Username on Twitter" - click specifically on this text
+				- After completing each task action, IMMEDIATELY click the "Refresh" button located to the right of the task text
+				- Wait for visual confirmation of task completion (green checkmark or similar indicator)
 
+				3. PLATFORM-SPECIFIC INSTRUCTIONS:
+				- Twitter/X tasks: Complete all following, liking, retweeting as directed
+				- Link clicking tasks: Follow links and head back to the quest page to verify completion. There is no need to complete the
+				specified task like "Sign up for an account" on the external site if it is from tasks that say "Visit the website" or something
+				along those lines.
+				- Q&A tasks: Provide accurate answers based on available information
+				- Telegram tasks: Wait exactly 30 seconds after task initiation to allow manual completion
+				- Discord tasks: Skip entirely and proceed to next task
+				- All other platforms: Complete as directed without delay
 
-				Social media interactions (X/Twitter)- Liking, Follwing, Retweeting
-				Link clicks
-				Question answering
+				4. VERIFICATION PROTOCOL:
+				- After completing each individual task, click the "Refresh" button
+				- Before leaving any quest page, scroll through entire page to verify all tasks show completed status
+				- If any task shows incomplete status, retry that specific task
 
-				Full Page Verification:
+				5. NAVIGATION:
+				- After verifying all tasks are complete for current quest, return to Galxequests.json
+				- Select next quest URL in sequence
+				- Repeat process until all quests in json file are completed
 
-				Scroll entire page
-				Confirm all tasks completed
-						
-				Navigation:
+				ERROR HANDLING:
+				- If a task fails to register as complete after 3 refresh attempts, note the issue and proceed to next task
+				- If redirection fails when clicking task text, try once more before reporting the issue
 
-				Return to Galxequests.json
-				Proceed to next quest URL
-
-
-				Repeat process until all quests completed
-
-				Key Focus:
-
-				Systematic task completion
-				Comprehensive page verification
-				Sequential quest processing
+				CRITICAL REMINDER: ALWAYS click the "Refresh" button after completing each task to verify successful completion.
 			""",
-			llm=model,
+			llm=ClaudeAIModel,
 			controller=controller,
 			browser_context=context,
 		)
 		TaskVerificationAgent = Agent(
 			task="""
-				Objective: Verify Completion of quests from Galxequests.json
-				Detailed Process:
+				OBJECTIVE: Verify Completion Status of All Quests in Galxequests.json
 
-				Open first quest URL from Galxequests.json
-				Quest Verification:
+				VERIFICATION PROCESS:
+				1. Access each quest URL sequentially from Galxequests.json
+				2. Perform thorough verification of all tasks within each quest
+				3. Refresh incomplete tasks as needed
+				4. Document verification results
+				5. Proceed systematically through all quests
 
-				Scroll entire page
-				Refresh page to confirm task status
-				Identify task completion via green tick marks
+				DETAILED VERIFICATION PROTOCOL:
+				1. INITIAL ASSESSMENT
+				- Load quest page completely
+				- Scroll through entire page from top to bottom to ensure all elements are visible
+				- Identify all task elements requiring verification
 
-				Verification Criteria:
+				2. COMPLETION STATUS IDENTIFICATION
+				- Verification indicators:
+					• GREEN CIRCULAR CHECKMARK on right side of task = COMPLETED
+					• GREEN BOX surrounding task text = COMPLETED
+					• ABSENCE of green indicators = INCOMPLETE
 
-				Green tick mark = Task completed
-				Full page scroll ensures comprehensive task review
+				3. REFRESH PROCEDURE
+				- ONLY for tasks WITHOUT green indicators:
+					• Locate the "Refresh" button positioned on the right side of the task text
+					• Click the refresh button ONCE
+					• Wait 3 seconds for page response
+					• Confirm whether green indicator appears after refresh
 
-				Navigation:
+				4. COMPREHENSIVE VERIFICATION
+				- After addressing individual incomplete tasks:
+					• Scroll through entire page once more
+					• Confirm ALL tasks display either a green checkmark or green box
+					• Document any persistently incomplete tasks
 
-				After verifying all tasks on current quest
-				Return to Galxequests.json
-				Proceed to next quest URL
-				Repeat verification process
+				5. NAVIGATION SEQUENCE:
+				- Once current quest verification is complete:
+					• Return to Galxequests.json file
+					• Select next quest URL in sequence
+					• Repeat verification process for new quest
 
-				Termination Condition:
+				COMPLETION CRITERIA:
+				- All quests from Galxequests.json have been accessed
+				- Every task within each quest shows a green completion indicator
+				- Full documentation of any exceptions or incomplete tasks
 
-				Complete verification of all questzes in Galxequests.json
-
-				Key Focus:
-
-				Visual confirmation of task completion
-				Systematic page-by-page verification
-				Ensure 100% task status check
+				CRITICAL REQUIREMENTS:
+				- ALWAYS scroll through entire page to ensure all tasks are visible
+				- NEVER skip the refresh procedure for tasks without green indicators
+				- ALWAYS perform a final verification scroll before proceeding to next quest
 			""",
-			llm=model,
+			llm=ClaudeAIModel,
 			controller=controller,
 			browser_context=context,
 		)
@@ -219,6 +247,9 @@ async def main():
 				Verify "Completed" or "Claimed" status
 				If the quest is not completed, check for the presence of a "Claim", "Participate" or a button of similar nature.
 				Press that button to complete the quest if it has not already been pressed.
+				If a pop up appears that says "Claim Directly" press that button to complete the quest! Wait for 10 seconds for the pop up to appear. 
+
+				If there is a timer on the raffle it means the quest is successfully completed.
 				Navigation:
 
 				If completed, return to Galxequests.json
@@ -232,23 +263,45 @@ async def main():
 				Systematic status confirmation
 				Sequential quest processing
 			""",
-			llm=model,
+			llm=ClaudeAIModel,
 			controller=controller,
 			browser_context=context,
 		)
 
 
-		# loginCheckerAgenthistory = await LoginCheckerAgent.run()
-		# print(f"Login Checker Agent History: {loginCheckerAgenthistory.total_input_tokens()}")
-		# AlphaHunterAgenthistory= await AlphaHunterAgent.run()
-		# print(f"Alpha Hunter Agent History: {AlphaHunterAgenthistory.total_input_tokens()}")
-		# TaskCompletionAgenthistory = await TaskCompletionAgent.run()
-		# print(f"Task Completion Agent History: {TaskCompletionAgenthistory.total_input_tokens()}")
-		# TaskVerificationAgenthistory = await TaskVerificationAgent.run()	
-		# print(f"Task Verification Agent History: {TaskVerificationAgenthistory.total_input_tokens()}")
-		QuestCompletionAgenthistory = await QuestCompletionAgent.run()
-		print(f"Quest Completion Agent History: {QuestCompletionAgenthistory.total_input_tokens()}")
+		LoginCheckerAgenthistory = await LoginCheckerAgent.run()
+		LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
+		LoginCheckerAgenthistorytime = LoginCheckerAgenthistory.total_duration_seconds()
+		print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
+		print("Time taken for LoginCheckerAgent:", LoginCheckerAgenthistorytime)
 
+
+		AlphaHunterAgenthistory = await AlphaHunterAgent.run()
+		AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
+		AlphaHunterAgenthistorytime = AlphaHunterAgenthistory.total_duration_seconds()
+		print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
+		print("Time taken for AlphaHunterAgent:", AlphaHunterAgenthistorytime)
+
+
+		# TaskCompletionAgenthistory = await TaskCompletionAgent.run()
+		# TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		# TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
+		# print("Tokens used for TaskCompletionAgent:", TaskCompletionAgenthistoryTokens)
+		# print("Time taken for TaskCompletionAgent:", TaskCompletionAgenthistorytime)
+
+
+		# TaskCompletionAgenthistory = await TaskVerificationAgent.run()
+		# TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		# TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
+		# print("Tokens used for TaskVerificationAgent:", TaskCompletionAgenthistoryTokens)
+		# print("Time taken for TaskVerificationAgent:", TaskCompletionAgenthistorytime)
+
+
+		# QuestCompletionAgenthistory = await QuestCompletionAgent.run()
+		# QuestCompletionAgenthistoryTokens = QuestCompletionAgenthistory.total_input_tokens()
+		# QuestCompletionAgenthistorytime = QuestCompletionAgenthistory.total_duration_seconds()
+		# print("Tokens used for QuestCompletionAgent:", QuestCompletionAgenthistoryTokens)
+		# print("Time taken for QuestCompletionAgent:", QuestCompletionAgenthistorytime)
 
 asyncio.run(main())
 
