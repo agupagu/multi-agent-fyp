@@ -283,25 +283,25 @@ async def main():
 		print("Time taken for AlphaHunterAgent:", AlphaHunterAgenthistorytime)
 
 
-		# TaskCompletionAgenthistory = await TaskCompletionAgent.run()
-		# TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
-		# TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
-		# print("Tokens used for TaskCompletionAgent:", TaskCompletionAgenthistoryTokens)
-		# print("Time taken for TaskCompletionAgent:", TaskCompletionAgenthistorytime)
+		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
+		TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
+		print("Tokens used for TaskCompletionAgent:", TaskCompletionAgenthistoryTokens)
+		print("Time taken for TaskCompletionAgent:", TaskCompletionAgenthistorytime)
 
 
-		# TaskCompletionAgenthistory = await TaskVerificationAgent.run()
-		# TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
-		# TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
-		# print("Tokens used for TaskVerificationAgent:", TaskCompletionAgenthistoryTokens)
-		# print("Time taken for TaskVerificationAgent:", TaskCompletionAgenthistorytime)
+		TaskCompletionAgenthistory = await TaskVerificationAgent.run()
+		TaskCompletionAgenthistoryTokens = TaskCompletionAgenthistory.total_input_tokens()
+		TaskCompletionAgenthistorytime = TaskCompletionAgenthistory.total_duration_seconds()
+		print("Tokens used for TaskVerificationAgent:", TaskCompletionAgenthistoryTokens)
+		print("Time taken for TaskVerificationAgent:", TaskCompletionAgenthistorytime)
 
 
-		# QuestCompletionAgenthistory = await QuestCompletionAgent.run()
-		# QuestCompletionAgenthistoryTokens = QuestCompletionAgenthistory.total_input_tokens()
-		# QuestCompletionAgenthistorytime = QuestCompletionAgenthistory.total_duration_seconds()
-		# print("Tokens used for QuestCompletionAgent:", QuestCompletionAgenthistoryTokens)
-		# print("Time taken for QuestCompletionAgent:", QuestCompletionAgenthistorytime)
+		QuestCompletionAgenthistory = await QuestCompletionAgent.run()
+		QuestCompletionAgenthistoryTokens = QuestCompletionAgenthistory.total_input_tokens()
+		QuestCompletionAgenthistorytime = QuestCompletionAgenthistory.total_duration_seconds()
+		print("Tokens used for QuestCompletionAgent:", QuestCompletionAgenthistoryTokens)
+		print("Time taken for QuestCompletionAgent:", QuestCompletionAgenthistorytime)
 
 asyncio.run(main())
 

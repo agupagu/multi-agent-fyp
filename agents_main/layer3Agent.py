@@ -282,18 +282,18 @@ async def main():
 
 		
 
-		# LoginCheckerAgenthistory = await LoginCheckerAgent.run()
-		# LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
-		# LoginCheckerAgenthistorytime = LoginCheckerAgenthistory.total_duration_seconds()
-		# print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
-		# print("Time taken for LoginCheckerAgent:", LoginCheckerAgenthistorytime)
+		LoginCheckerAgenthistory = await LoginCheckerAgent.run()
+		LoginCheckerAgenthistoryTokens = LoginCheckerAgenthistory.total_input_tokens()
+		LoginCheckerAgenthistorytime = LoginCheckerAgenthistory.total_duration_seconds()
+		print("Tokens used for LoginCheckerAgent:", LoginCheckerAgenthistoryTokens)
+		print("Time taken for LoginCheckerAgent:", LoginCheckerAgenthistorytime)
 
 
-		# AlphaHunterAgenthistory = await AlphaHunterAgent.run()
-		# AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
-		# AlphaHunterAgenthistorytime = AlphaHunterAgenthistory.total_duration_seconds()
-		# print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
-		# print("Time taken for AlphaHunterAgent:", AlphaHunterAgenthistorytime)
+		AlphaHunterAgenthistory = await AlphaHunterAgent.run()
+		AlphaHunterAgenthistoryTokens = AlphaHunterAgenthistory.total_input_tokens()
+		AlphaHunterAgenthistorytime = AlphaHunterAgenthistory.total_duration_seconds()
+		print("Tokens used for AlphaHunterAgent:", AlphaHunterAgenthistoryTokens)
+		print("Time taken for AlphaHunterAgent:", AlphaHunterAgenthistorytime)
 
 		print("Starting TaskCompletionAgent")
 		TaskCompletionAgenthistory = await TaskCompletionAgent.run()
